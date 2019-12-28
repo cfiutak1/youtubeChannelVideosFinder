@@ -20,16 +20,15 @@ class YoutubeAccessor:
     def __init__(self, api_key, logger):
         self.api_key = api_key
         self.logger = logger
+
+        self.youtube_api_url = "https://www.googleapis.com/youtube/v3/"
+        self.youtube_channels_api_url = f"{self.youtube_api_url}channels?key={self.api_key}&"
+        self.youtube_search_api_url = f"{self.youtube_api_url}search?key={self.api_key}&"
         
     def get_channel_id(self, channel_name):
         self.logger.info("Searching channel id for channel: %s", channel_name)
 
-        # TODO make these formatted strings
-        youtube_api_url = "https://www.googleapis.com/youtube/v3/"
-        youtube_channels_api_url = youtube_api_url + "channels?key={0}&".format(self.api_key)
-        youtube_search_api_url = youtube_api_url + "search?key={0}&".format(self.api_key)
-
-        request_parameters_channel_id = youtube_channels_api_url + "forUsername={0}&part=id"
+        request_parameters_channel_id = f"{self.youtube_channels_api_url}forUsername={channel_name}&part=id"
 
         try:
             url = request_parameters_channel_id.format(channel_name)
@@ -77,14 +76,10 @@ class YoutubeAccessor:
 
         next_page_token = ""
 
-        # Strings
-        youtube_api_url = "https://www.googleapis.com/youtube/v3/"
-        youtube_search_api_url = youtube_api_url + "search?key={0}&".format(self.api_key)
-
-        request_channel_videos_info = youtube_search_api_url + "channelId={0}&part=id&order=date&type=video&publishedBefore={1}&publishedAfter={2}&pageToken={3}&maxResults=50"
-
         while not found_all_videos:
-            url = request_channel_videos_info.format(channel_id, published_before, published_after, next_page_token)
+            url = f"{self.youtube_search_api_url}channelId={channel_id}&part=id&order=date&type=video" \
+                                      f"&publishedBefore={published_before}&publishedAfter={published_after}" \
+                                      f"&pageToken={next_page_token}&maxResults=50"
             self.logger.debug("Request: %s", url)
 
             try:

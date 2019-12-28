@@ -4,9 +4,8 @@ import logging
 import json
 
 from arg_parser_generator import ArgParserGenerator
+
 from youtube_accessor import YoutubeAccessor
-from youtube_accessor import ChannelNotFoundException
-from youtube_accessor import MultipleChannelsFoundException
 from youtube_accessor import InvalidDateRangeException
 
 
@@ -89,14 +88,10 @@ def main():
 
 	yt_accessor = YoutubeAccessor(args.api_key, log)
 
-	try:
-		channel_id = yt_accessor.get_channel_id(args.channel)
-
-	except ChannelNotFoundException or MultipleChannelsFoundException as e:
-		print(e)
-		sys.exit(1)
+	channel_id = args.channel_id
 
 	try:
+		# TODO I'm hitting my quota a lot faster than I should be. What's the default interval and can I make the max per page smaller?
 		channel_videos = yt_accessor.get_channel_videos(
 			channel_id,
 			date_to_start_from,

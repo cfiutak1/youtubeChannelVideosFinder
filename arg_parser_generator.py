@@ -15,10 +15,10 @@ class ArgParserGenerator:
         return arg_parser
 
     @staticmethod
-    def add_channel_arg(arg_parser: argparse.ArgumentParser):
+    def add_channel_id_arg(arg_parser: argparse.ArgumentParser):
         arg_parser.add_argument(
-            "-c", "--channel",
-            dest="channel",
+            "-c", "--channel_id",
+            dest="channel_id",
             action="store",
             required=True,
             help="Youtube channel to get videos from"
@@ -110,7 +110,6 @@ class ArgParserGenerator:
             description="This program finds all videos in a given Youtube channel"
         )
         arg_parser = ArgParserGenerator.add_api_key_arg(arg_parser)
-        arg_parser = ArgParserGenerator.add_channel_arg(arg_parser)
         arg_parser = ArgParserGenerator.add_output_file_path_arg(arg_parser)
         arg_parser = ArgParserGenerator.add_log_file_path_arg(arg_parser)
         arg_parser = ArgParserGenerator.add_date_range_args(arg_parser)

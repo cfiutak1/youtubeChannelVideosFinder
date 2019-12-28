@@ -4,14 +4,6 @@ import sys
 import date_utils
 
 
-class ChannelNotFoundException(Exception):
-    pass
-
-
-class MultipleChannelsFoundException(Exception):
-    pass
-
-
 class InvalidDateRangeException(Exception):
     pass
 
@@ -24,49 +16,6 @@ class YoutubeAccessor:
         self.youtube_api_url = "https://www.googleapis.com/youtube/v3/"
         self.youtube_channels_api_url = f"{self.youtube_api_url}channels?key={self.api_key}&"
         self.youtube_search_api_url = f"{self.youtube_api_url}search?key={self.api_key}&"
-        
-    def get_channel_id(self, channel_name):
-        self.logger.info("Searching channel id for channel: %s", channel_name)
-
-        request_parameters_channel_id = f"{self.youtube_channels_api_url}forUsername={channel_name}&part=id"
-
-        try:
-            url = request_parameters_channel_id.format(channel_name)
-            self.logger.debug("Request: %s", url)
-
-            self.logger.debug("Sending request")
-            response = requests.get(url)
-
-        except requests.exceptions.RequestException as e:
-            self.logger.error(e)
-            sys.exit(1)
-
-        self.logger.debug("Parsing the response")
-        response_json = json.loads(response.content)
-        self.logger.debug("Response: %s", json.dumps(response_json, indent=4))
-
-        self.logger.debug("Extracting the channel id")
-        num_results = response_json["pageInfo"]["totalResults"]
-
-        if num_results > 1:
-            self.logger.debug(
-                "Multiple channels were received in the response. "
-                "If this happens, something can probably be improved around here"
-            )
-            raise MultipleChannelsFoundException(
-                "Multiple channels were received in the response. Try using the channel ID."
-            )
-
-        elif num_results == 0:
-            self.logger.error("Channel id not found")
-            raise ChannelNotFoundException(
-                "The channel id could not be retrieved. Make sure that the channel name is correct"
-            )
-
-        channel_id = response_json["items"][0]["id"]
-        self.logger.info("Channel id found: %s", str(channel_id))
-
-        return channel_id
 
     def get_channel_videos_in_date_range(self, channel_id, published_before, published_after):
         self.logger.info("Getting videos published before %s and after %s", published_before, published_after)
